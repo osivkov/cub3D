@@ -1,0 +1,12 @@
+main()
+ ├─ parse_header()		// RGB-цвета
+ ├─ parse_map()			// карта, игрок
+ ├─ init MLX + screen img
+ ├─ mlx_loop_hook(frame)	// каждая итерация
+ │		frame(app)		// < наш рендер
+ │		├─ залить потолок
+ │		├─ залить пол
+ │		└─ for x = 0..WIN_W-1	
+ │				raycast()
+ │				рисуем столб
+ └─ mlx_loop()		// вечный цикл событий
