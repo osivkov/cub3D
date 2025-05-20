@@ -1,3 +1,7 @@
+NO ./maps/north.xpm
+SO ./maps/south.xpm
+WE ./maps/west.xpm
+EA ./maps/east.xpm
 F 0,120,200
 C 240,240,255
 1111111111
