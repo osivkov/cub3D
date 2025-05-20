@@ -6,14 +6,13 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:24:45 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/13 10:33:23 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/20 17:35:15 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 #include "libft.h"
 #include <fcntl.h>
-#include <stdlib.h>
 
 /* кладём игрока в cfg->pl и сразу задаём угол dir */
 static void	norm_player(t_cfg *cfg, int y, int x, char c)

@@ -6,7 +6,7 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:11:30 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/13 13:04:31 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/20 17:30:48 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,24 @@
 /* ────────── внешние инклюды ────────── */
 # include "mlx.h"          /* MiniLibX API */
 # include <stdlib.h>       /* malloc/free, exit */
-#include "libft.h"
+# include "libft.h"
 # include <unistd.h>       /* write */
-
+# include <math.h>
 /* ────────── размеры окна ────────── */
-# define WIN_W 640
-# define WIN_H 480
+# define WIN_W 1280
+# define WIN_H 960
+
+# define MOVE_SPEED 0.1
+# define ROT_SPEED 0.05
+# define PADDING 0.1
+
+# define KEY_W     119
+# define KEY_A     97
+# define KEY_S     115
+# define KEY_D     100
+# define KEY_LEFT  65361
+# define KEY_RIGHT 65363
+# define KEY_ESC   65307
 
 /* ────────── базовый off-screen буфер ────────── */
 typedef struct s_img
@@ -61,11 +73,33 @@ typedef struct s_player
 	double	dir;/* угол направления (радианы, 0 = восток) */
 }	t_player;
 
+enum e_tex_dir
+{
+	TEX_NO,
+	TEX_SO,
+	TEX_WE,
+	TEX_EA
+};
+
+typedef struct s_tex
+{
+    void            *img;    // чтобы сохранить изображение
+    int             width;
+    int             height;
+    unsigned int    *pixels;
+} t_tex;
+
 /* ────────── конфиг сцены ────────── */
 typedef struct s_cfg
 {
 	int			ceil_rgb;/* цвет потолка 0xRRGGBB */
 	int			floor_rgb;/* цвет пола    0xRRGGBB */
+	int 		tex_id;
+	char		*tex_north;
+	char		*tex_south;
+	char		*tex_west;
+	char		*tex_east;
+	t_tex		textures[4];
 	t_map		map;/* лабиринт*/
 	t_player	pl;/* игрок*/
 }	t_cfg;
@@ -78,9 +112,14 @@ typedef struct s_app
 }	t_app;
 
 /* ────────── прототипы ────────── */
+int		init_cfg(t_cfg *cfg);
+int		init_textures(t_app *app);
 int		parse_header(char *file, t_cfg *cfg);
 int		parse_map(char *file, t_cfg *cfg);
+double	raycast(t_cfg *cfg, int col, int *line_h, double *wall_x);
 int		frame(void *param);
-int		close_hook(void *param);
+int		close_hook(t_app *app);
+int		hit_wall(t_cfg *cfg, int mx, int my);
+int		key_press(int keycode, t_app *app);
 
 #endif
