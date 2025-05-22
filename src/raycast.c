@@ -85,16 +85,17 @@ double	raycast(t_cfg *cfg, int col, int *line_h, double *wall_x)
 	}
 
 	// 5. перпендикулярная дистанция
+	double dist;
 	if (side == 0)
-		perp = (side_dist_x - delta_x);
+		dist = (map_x - cfg->pl.x + (1 - step_x) / 2.0) / cos(ray_dir);
 	else
-		perp = (side_dist_y - delta_y);
-	perp = perp * cos(ray_dir - cfg->pl.dir);
+		dist = (map_y - cfg->pl.y + (1 - step_y) / 2.0) / sin(ray_dir);
+	perp = dist * cos(ray_dir - cfg->pl.dir);
 
 	if (side == 0)
-		*wall_x = cfg->pl.y + perp * sin(ray_dir);
+		*wall_x = cfg->pl.y + dist * sin(ray_dir);
 	else
-		*wall_x = cfg->pl.x + perp * cos(ray_dir);
+		*wall_x = cfg->pl.x + dist * cos(ray_dir);
 	*wall_x -= floor(*wall_x);
 	// 6. высота линии
 	*line_h = (int)(WIN_H / perp);
