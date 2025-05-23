@@ -6,7 +6,7 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:11:30 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/23 16:59:07 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/23 18:32:29 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,16 @@ enum e_tex_dir
 	TEX_EA
 };
 
+typedef struct s_bfs
+{
+	int		H;
+	int		W;
+	int		head;
+	int		tail;
+	t_pt	*queue;
+	int		**vis;
+}	t_bfs;
+
 typedef struct s_tex
 {
     void            *img;    // чтобы сохранить изображение
@@ -118,8 +128,7 @@ typedef struct s_app
 /* ────────── прототипы ────────── */
 int		init_cfg(t_cfg *cfg);
 int		init_textures(t_app *app);
-int		parse_header(char *file, t_cfg *cfg);
-int		parse_map(char *file, t_cfg *cfg);
+void	norm_player(t_cfg *cfg, int y, int x, char c);
 double	raycast(t_cfg *cfg, int col, int *line_h, double *wall_x);
 int		frame(void *param);
 int		close_hook(t_app *app);
@@ -127,7 +136,12 @@ int		hit_wall(t_cfg *cfg, int mx, int my);
 int		key_press(int keycode, t_app *app);
 int		validate_map(t_cfg *cfg);
 char	find_bad_symbol(const char *file);
-int 	parse_scene(const char *file, t_cfg *cfg);
+int		parse_scene(const char *file, t_cfg *cfg);
+int		find_spawn(t_cfg *cfg, int *spy, int *spx);
+int		check_leak(t_cfg *cfg, int sy, int sx);
 
-
+void	bfs_free(t_bfs *b);
+int		bfs_run(t_cfg *cfg, t_bfs *b);
+int		bfs_step(t_cfg *cfg, t_bfs *b);
+t_bfs	*bfs_init(t_cfg *cfg, int sy, int sx);
 #endif

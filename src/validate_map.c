@@ -6,141 +6,108 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 16:17:40 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/23 17:05:02 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/23 18:29:46 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
-
 
 #include "cub3d.h"
 #include "libft.h"
 #include <stdlib.h>
 
 #define MAX_MAP MAP_MAX
-
 /* найти спавн и проверить символы */
-static int	find_spawn(t_cfg *cfg, int *spy, int *spx)
+t_bfs	*bfs_init(t_cfg *cfg, int sy, int sx)
 {
-	int i = 0;
-	int hg = cfg->map.h;
-	int wg = cfg->map.w;
-	int spawn = 0;
-	char bad = '\0';
-	int by = -1, bx = -1;
-	while (i < hg)
-	{
-		int j = 0;
-		while (j < wg)
-		{
-			char c = cfg->map.grid[i][j];
-			if (c != ' ' && c != '\t')
-			{
-				if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
-				{
-					spawn++;
-					*spy = i;
-					*spx = j;
-				}
-				else if (c != '0' && c != '1')
-				{
-					bad = c;
-					by = i;
-					bx = j;
-				}
-			}
-			j++;
-		}
-		i++;
-	}
-	if (bad)
-	{
-		ft_printf("Error: invalid character '%c' at (%d,%d)\n", bad, by, bx);
-		return 0;
-	}
-	if (spawn == 0)
-	{
-		ft_putendl_fd("Error: no player start found", 2);
-		return 0;
-	}
-	if (spawn > 1)
-	{
-		ft_putendl_fd("Error: multiple player starts found", 2);
-		return 0;
-	}
-	return 1;
-}
+	t_bfs	*b;
+	int		total;
+	int		i;
 
-/* BFS выявляет утечку */
-static int	check_leak(t_cfg *cfg, int sy, int sx)
-{
-	int H = cfg->map.h;
-	int W = cfg->map.w;
-	int total = H * W;
-	int head = 0, tail = 0;
-	t_pt *queue = malloc(sizeof(*queue) * total);
-	int **vis = malloc(sizeof(*vis) * H);
-	int i = 0;
-	while (i < H)
-	{
-		vis[i] = calloc(W, sizeof(int));
-		i++;
-	}
-	vis[sy][sx] = 1;
-	queue[tail++] = (t_pt){sy, sx};
-	const int dy[4] = {-1,1,0,0};
-	const int dx[4] = {0,0,-1,1};
-	int leak = 0;
-	while (head < tail && !leak)
-	{
-		t_pt p = queue[head++];
-		int k = 0;
-		while (k < 4)
-		{
-			int ny = p.y + dy[k];
-			int nx = p.x + dx[k];
-			if (ny < 0 || nx < 0 || ny >= H || nx >= W || cfg->map.grid[ny][nx] == ' ')
-			{
-				leak = 1;
-				break;
-			}
-			if (!vis[ny][nx])
-			{
-				char c = cfg->map.grid[ny][nx];
-				if (c == '0' || c=='N' || c=='S' || c=='E' || c=='W')
-				{
-					vis[ny][nx] = 1;
-					queue[tail++] = (t_pt){ny, nx};
-				}
-			}
-			k++;
-		}
-	}
+	b = malloc(sizeof(*b));
+	b->H = cfg->map.h;
+	b->W = cfg->map.w;
+	total = b->H * b->W;
+	b->queue = malloc(sizeof(*b->queue) * total);
+	b->vis = malloc(sizeof(*b->vis) * b->H);
 	i = 0;
-	while (i < H)
+	while (i < b->H)
 	{
-		free(vis[i]);
+		b->vis[i] = calloc(b->W, sizeof(int));
 		i++;
 	}
-	free(vis);
-	free(queue);
-	return !leak;
+	b->head = 0;
+	b->tail = 0;
+	b->vis[sy][sx] = 1;
+	b->queue[b->tail++] = (t_pt){sy, sx};
+	return (b);
 }
 
-
-/* validate_map: главная */
-int	validate_map(t_cfg *cfg)
+/* 2) Раскрытие одной точки p: возвращает 1 при утечке */
+/* 1) Обработка одного направления; возвращает 1 при утечке */
+static int	bfs_process_dir(t_cfg *cfg,
+				t_bfs *b,
+				t_pt p,
+				int dir)
 {
-	int	sy;
-	int	sx;
+	const int	dy[4] = {-1, 1, 0, 0};
+	const int	dx[4] = {0, 0, -1, 1};
+	int			ny;
+	int			nx;
 
-	if (!find_spawn(cfg, &sy, &sx))
-		return (0);
-	if (!check_leak(cfg, sy, sx))
+	ny = p.y + dy[dir];
+	nx = p.x + dx[dir];
+	if (ny < 0 || nx < 0 || ny >= b->H || nx >= b->W)
+		return (1);
+	if (cfg->map.grid[ny][nx] == ' ')
+		return (1);
+	if (cfg->map.grid[ny][nx] != '1' && !b->vis[ny][nx])
 	{
-		ft_putendl_fd("Error: map is not closed by walls", 2);
-		return (0);
+		b->vis[ny][nx] = 1;
+		b->queue[b->tail++] = (t_pt){ny, nx};
 	}
-	return (1);
+	return (0);
 }
 
+/* 2) Один шаг BFS: итерируем 4 направления */
+int	bfs_step(t_cfg *cfg, t_bfs *b)
+{
+	t_pt	p;
+	int		k;
+	int		leak;
+
+	p = b->queue[b->head++];
+	k = 0;
+	leak = 0;
+	while (k < 4 && !leak)
+	{
+		leak = bfs_process_dir(cfg, b, p, k);
+		k++;
+	}
+	return (leak);
+}
+
+/* 3) Основной цикл BFS: возвращает 1 при утечке, иначе 0 */
+int	bfs_run(t_cfg *cfg, t_bfs *b)
+{
+	int	leak;
+
+	leak = 0;
+	while (b->head < b->tail && !leak)
+		leak = bfs_step(cfg, b);
+	return (leak);
+}
+
+/* 4) Освобождение всех ресурсов, выделенных для BFS */
+void	bfs_free(t_bfs *b)
+{
+	int	i;
+
+	i = 0;
+	while (i < b->H)
+	{
+		free(b->vis[i]);
+		i++;
+	}
+	free(b->vis);
+	free(b->queue);
+	free(b);
+}

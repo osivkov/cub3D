@@ -6,7 +6,7 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 16:17:29 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/23 16:58:48 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/23 18:32:18 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <fcntl.h>
 #include <string.h>
 
-static void	norm_player(t_cfg *cfg, int y, int x, char c)
+void	norm_player(t_cfg *cfg, int y, int x, char c)
 {
 	cfg->pl.x = x + 0.5;
 	cfg->pl.y = y + 0.5;
