@@ -6,7 +6,7 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:10:13 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/20 17:36:01 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:14:46 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,34 @@ int	main(int ac, char **av)
 {
 	t_app	app;
 
+	// char	bad;
+	
+	
 	if (ac != 2)
 		return (write(2, "Usage: ./cub3D scene.cub\n", 25), 1);
 
-	if (init_cfg(&app.cfg))
-		return (1);
-
-	if (parse_header(av[1], &app.cfg) || parse_map(av[1], &app.cfg))
-		return (write(2, "Error\ninvalid .cub\n", 19), 1);
-
+	// bad = find_bad_symbol(av[1]);
+	// if (bad)
+    // {
+    //     ft_printf("Error: invalid character '%c'\n", bad);
+    //     return (1);
+    // }
+	if (init_cfg(&app.cfg)
+	|| parse_scene(av[1],&app.cfg))
+	/* 3) Проверяем замкнутость и корректность символов уже загруженной сетки */
+   {
+	   /* validate_map сама печатает в stderr причину ошибки */
+	   return (1);
+   }
+   ft_printf(">>> Loaded map size: %d × %d\n", app.cfg.map.w, app.cfg.map.h);
+	for (int yy = 0; yy < app.cfg.map.h; yy++)
+	{
+    // grid не нуль-терминирована, поэтому используем write
+    write(1, app.cfg.map.grid[yy], app.cfg.map.w);
+    write(1, "\n", 1);
+	}
+	if (!validate_map(&app.cfg))
+		return ( 1);
 	app.mlx.mlx = mlx_init();
 	if (!app.mlx.mlx)
 		return (write(2, "Failed to initialize mlx\n", 25), 1);

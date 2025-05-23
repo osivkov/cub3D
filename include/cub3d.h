@@ -6,7 +6,7 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:11:30 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/20 17:30:48 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/23 16:13:31 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,10 @@ typedef struct s_map
 	int		h;/* фактическая высота */
 }	t_map;
 
+typedef struct s_pt
+{	int y;
+	int	x;
+}t_pt;
 /* ────────── положение игрока ────────── */
 typedef struct s_player
 {
@@ -121,5 +125,9 @@ int		frame(void *param);
 int		close_hook(t_app *app);
 int		hit_wall(t_cfg *cfg, int mx, int my);
 int		key_press(int keycode, t_app *app);
+int		validate_map(t_cfg *cfg);
+char	find_bad_symbol(const char *file);
+int 	parse_scene(const char *file, t_cfg *cfg);
+
 
 #endif
