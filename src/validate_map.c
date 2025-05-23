@@ -6,7 +6,7 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 16:17:40 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/23 18:29:46 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/23 19:33:22 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,27 @@ int	bfs_step(t_cfg *cfg, t_bfs *b)
 	return (leak);
 }
 
+/* DEBUG: показать посещённые клетки ('*') поверх карты */
+static void	debug_dump_vis(t_cfg *cfg, t_bfs *b)
+{
+	int y = 0;
+	while (y < b->H)
+	{
+		int x = 0;
+		while (x < b->W)
+		{
+			if (b->vis[y][x])
+				ft_putchar_fd('*', 1);
+			else
+				ft_putchar_fd(cfg->map.grid[y][x], 1);
+			x++;
+		}
+		ft_putchar_fd('\n', 1);
+		y++;
+	}
+}
+
+
 /* 3) Основной цикл BFS: возвращает 1 при утечке, иначе 0 */
 int	bfs_run(t_cfg *cfg, t_bfs *b)
 {
@@ -93,6 +114,7 @@ int	bfs_run(t_cfg *cfg, t_bfs *b)
 	leak = 0;
 	while (b->head < b->tail && !leak)
 		leak = bfs_step(cfg, b);
+	debug_dump_vis(cfg, b); 
 	return (leak);
 }
 

@@ -6,7 +6,7 @@
 /*   By: osivkov <osivkov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 16:17:29 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/23 18:32:18 by osivkov          ###   ########.fr       */
+/*   Updated: 2025/05/23 19:17:06 by osivkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,17 +154,15 @@ int	parse_scene(const char *file, t_cfg *cfg)
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
 		return (1);
-
 	/* сброс заголовков */
 	i = 0;
 	while (i < 6)
 		seen[i++] = 0;
 	header_cnt = 0;
-
 	/* подготовка карты */
-	y     = 0;
+	y	= 0;
 	max_w = 0;
-	i     = 0;
+	i	= 0;
 	while (i < MAP_MAX)
 	{
 		j = 0;
@@ -209,14 +207,12 @@ int	parse_scene(const char *file, t_cfg *cfg)
 			free(orig);
 			continue;
 		}
-
 		/* если заголовки ещё не все, пропускаем строку */
 		if (header_cnt < 6)
 		{
 			free(orig);
 			continue;
 		}
-
 		/* копируем строку карты */
 		j = 0;
 		while (p[j] && j < MAP_MAX)
@@ -230,16 +226,12 @@ int	parse_scene(const char *file, t_cfg *cfg)
 		if (j > max_w)
 			max_w = j;
 		y++;
-
 		free(orig);
 	}
-
 	close(fd);
-
 	/* проверяем, что было ровно 6 заголовков */
 	if (header_cnt != 6)
 		return (1);
-
 	cfg->map.w = max_w;
 	cfg->map.h = y;
 	return (0);
