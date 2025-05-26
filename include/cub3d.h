@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:11:30 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/19 13:56:10 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:49:19 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include "libft.h"
 # include <unistd.h>       /* write */
 # include <math.h>
+# include <stdbool.h>
 /* ────────── размеры окна ────────── */
 # define WIN_W 1280
 # define WIN_H 960
@@ -56,7 +57,7 @@ typedef struct s_mlx
 }	t_mlx;
 
 /* ────────── 2-D карта ────────── */
-# define MAP_MAX 128
+# define MAP_MAX 256
 
 typedef struct s_map
 {
@@ -92,6 +93,7 @@ typedef struct s_tex
 /* ────────── конфиг сцены ────────── */
 typedef struct s_cfg
 {
+	int			is_player;
 	int			ceil_rgb;/* цвет потолка 0xRRGGBB */
 	int			floor_rgb;/* цвет пола    0xRRGGBB */
 	int 		tex_id;
@@ -116,6 +118,7 @@ int		init_cfg(t_cfg *cfg);
 int		init_textures(t_app *app);
 int		parse_header(char *file, t_cfg *cfg);
 int		parse_map(char *file, t_cfg *cfg);
+bool	validate_map_closed(t_map *map);
 double	raycast(t_cfg *cfg, int col, int *line_h, double *wall_x);
 int		frame(void *param);
 int		close_hook(t_app *app);

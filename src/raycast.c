@@ -35,7 +35,7 @@ double	raycast(t_cfg *cfg, int col, int *line_h, double *wall_x)
 
 	// 1. направление луча
 	camera_x = (2.0 * col / (double)WIN_W) - 1.0;
-	ray_dir = cfg->pl.dir + camera_x * 0.523598; // 60° = π/3
+	ray_dir = cfg->pl.dir + camera_x * M_PI / 6.0;
 	delta_x = fabs(1 / cos(ray_dir));
 	delta_y = fabs(1 / sin(ray_dir));
 
@@ -102,13 +102,13 @@ double	raycast(t_cfg *cfg, int col, int *line_h, double *wall_x)
 
 	// 7. установка текстуры
 	if (side == 0 && cos(ray_dir) > 0)
-		cfg->tex_id = TEX_WE; // запад
+		cfg->tex_id = TEX_EA;
 	else if (side == 0 && cos(ray_dir) < 0)
-		cfg->tex_id = TEX_EA; // восток
+		cfg->tex_id = TEX_WE;
 	else if (side == 1 && sin(ray_dir) > 0)
-		cfg->tex_id = TEX_NO; // север
+		cfg->tex_id = TEX_SO;
 	else
-		cfg->tex_id = TEX_SO; // юг
+		cfg->tex_id = TEX_NO;
 
 	return perp;
 }

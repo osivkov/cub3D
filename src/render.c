@@ -46,7 +46,9 @@ int	frame(void *param)
 	x = 0;
 	while (x < WIN_W)
 	{
-		raycast(&app->cfg, x, &line_h, &wall_x);
+		double dist = raycast(&app->cfg, x, &line_h, &wall_x);
+		double intensity = 1.0 / (1.0 + dist * dist * 0.1);
+
 		draw_start = (WIN_H - line_h) / 2;
 		if (draw_start < 0)
 			draw_start = 0;
@@ -57,6 +59,8 @@ int	frame(void *param)
 		t_tex *tex = &app->cfg.textures[app->cfg.tex_id];
 
 		int tex_x = (int)(wall_x * (double)tex->width);
+		if ((app->cfg.tex_id == TEX_WE) || (app->cfg.tex_id == TEX_SO))
+			tex_x = tex->width - tex_x - 1;
 		if (tex_x < 0)
 			tex_x = 0;
 		if (tex_x >= tex->width)
@@ -73,6 +77,16 @@ int	frame(void *param)
 				tex_y = tex->height - 1;
 
 			unsigned int color = tex->pixels[tex_y * tex->width + tex_x];
+			unsigned char r = (color >> 16) & 0xFF;
+			unsigned char g = (color >> 8)  & 0xFF;
+			unsigned char b = color & 0xFF;
+
+			r = (int)(r * intensity);
+			g = (int)(g * intensity);
+			b = (int)(b * intensity);
+
+			color = (r << 16) | (g << 8) | b;
+
 			put_pixel(&app->mlx.screen, x, y, color);
 		}
 		++x;

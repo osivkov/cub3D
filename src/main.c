@@ -6,13 +6,30 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:10:13 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/19 14:58:07 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:55:09 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "mlx.h"
 #include "cub3d.h"
+
+void	print_map(const t_map *map)
+{
+	int y = 0;
+	while (y < map->h)
+	{
+		int x = 0;
+		while (x < map->w)
+		{
+			putchar(map->grid[y][x]);
+			x++;
+		}
+		putchar('\n');
+		y++;
+	}
+}
+
 
 int	main(int ac, char **av)
 {
@@ -24,9 +41,12 @@ int	main(int ac, char **av)
 	if (init_cfg(&app.cfg))
 		return (1);
 
-	if (parse_header(av[1], &app.cfg) || parse_map(av[1], &app.cfg))
-		return (write(2, "Error\ninvalid .cub\n", 19), 1);
-
+	if (parse_header(av[1], &app.cfg))
+		return (write(2, "Error: invalid .cub\n", 20), 1);
+	
+	print_map(&app.cfg.map);
+	if (!validate_map_closed(&app.cfg.map))
+		return (write(2, "Error: invalid map\n", 19), 1);
 	app.mlx.mlx = mlx_init();
 	if (!app.mlx.mlx)
 		return (write(2, "Failed to initialize mlx\n", 25), 1);

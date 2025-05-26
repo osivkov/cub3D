@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:16:42 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/19 13:59:00 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/26 17:00:40 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 int init_cfg(t_cfg *cfg)
 {
+	cfg->is_player = 0;
 	cfg->floor_rgb = -1;
 	cfg->ceil_rgb = -1;
 	cfg->tex_north = NULL;
@@ -22,6 +23,21 @@ int init_cfg(t_cfg *cfg)
 	cfg->tex_west = NULL;
 	cfg->tex_east = NULL;
 	return (0);
+}
+
+static void	norm_player(t_cfg *cfg, int y, int x, char c)
+{
+	cfg->is_player = 1;
+	cfg->pl.x = x + 0.5;
+	cfg->pl.y = y + 0.5;
+	if (c == 'N')
+		cfg->pl.dir = -M_PI / 2.0;
+	else if (c == 'S')
+		cfg->pl.dir = M_PI / 2.0;
+	else if (c == 'W')
+		cfg->pl.dir = M_PI;
+	else
+		cfg->pl.dir = 0.0;
 }
 
 /*
@@ -76,40 +92,183 @@ static void parse_texture(char *line, char **dst)
 ** останавливаемся на первой строке карты ('1','0','N','S','E','W').
 */
 
+int	has_cub_extension(const char *filename)
+{
+	size_t	len = ft_strlen(filename);
+
+	if (len < 4)
+		return (0); // слишком короткое имя
+	return (ft_strncmp(filename + len - 4, ".cub", 4) == 0);
+}
+
+// int	parse_header(char *file, t_cfg *cfg)
+// {
+// 	int		fd;
+// 	char	*line;
+// 	int		y = 0;
+// 	int		max_w = 0;
+
+// 	if (!has_cub_extension(file))
+// 		return (write(2, "Error: not .cub file \n", 22), 1);
+
+// 	fd = open(file, O_RDONLY);
+// 	if (fd < 0)
+// 		return (1);
+// 	line = get_next_line(fd);
+// 	while (line)
+// 	{
+// 		if (ft_strncmp(line, "F ", 2) == 0)
+// 			cfg->floor_rgb = get_rgb(line + 2);
+// 		else if (ft_strncmp(line, "C ", 2) == 0)
+// 			cfg->ceil_rgb = get_rgb(line + 2);
+// 		else if (ft_strncmp(line, "NO ", 3) == 0)
+// 			parse_texture(line + 2, &cfg->tex_north);
+// 		else if (ft_strncmp(line, "SO ", 3) == 0)
+// 			parse_texture(line + 2, &cfg->tex_south);
+// 		else if (ft_strncmp(line, "WE ", 3) == 0)
+// 			parse_texture(line + 2, &cfg->tex_west);
+// 		else if (ft_strncmp(line, "EA ", 3) == 0)
+// 			parse_texture(line + 2, &cfg->tex_east);
+// 		else if (ft_strchr(line,'1') || ft_strchr(line,'0'))
+// 		{
+// 			int	x;
+
+// 			x = 0;
+// 			while (line[x] && x < MAP_MAX)
+// 			{
+// 				cfg->map.grid[y][x] = line[x];
+// 				if (line[x] == 'N' || line[x] == 'S'
+// 					|| line[x] == 'E' || line[x] == 'W')
+// 					norm_player(cfg, y, x, line[x]);
+// 				++x;
+// 			}
+// 			if (x > max_w)
+// 				max_w = x;
+// 			++y;
+// 		}
+// 		free(line);
+// 		line = get_next_line(fd);
+// 	}
+// 	cfg->map.h = y;
+// 	cfg->map.w = max_w;
+// 	if (cfg->is_player == 0)
+// 		return (1);
+// 	close(fd);
+// 	return (0);
+// }
+
+int	open_cub_file(const char *file)
+{
+	int	fd;
+
+	if (!has_cub_extension(file))
+	{
+		write(2, "Error: not .cub file \n", 22);
+		return (-1);
+	}
+	fd = open(file, O_RDONLY);
+	if (fd < 0)
+		perror("open");
+	return (fd);
+}
+
+
+void	parse_directive(char *line, t_cfg *cfg)
+{
+	if (ft_strncmp(line, "F ", 2) == 0)
+		cfg->floor_rgb = get_rgb(line + 2);
+	else if (ft_strncmp(line, "C ", 2) == 0)
+		cfg->ceil_rgb = get_rgb(line + 2);
+	else if (ft_strncmp(line, "NO ", 3) == 0)
+		parse_texture(line + 2, &cfg->tex_north);
+	else if (ft_strncmp(line, "SO ", 3) == 0)
+		parse_texture(line + 2, &cfg->tex_south);
+	else if (ft_strncmp(line, "WE ", 3) == 0)
+		parse_texture(line + 2, &cfg->tex_west);
+	else if (ft_strncmp(line, "EA ", 3) == 0)
+		parse_texture(line + 2, &cfg->tex_east);
+}
+
+
+// int	parse_map_line(char *line, t_cfg *cfg, int y, int *max_w)
+// {
+// 	int	x = 0;
+
+// 	while (line[x] && x < MAP_MAX)
+// 	{
+// 		cfg->map.grid[y][x] = line[x];
+// 		if (line[x] == 'N' || line[x] == 'S'
+// 			|| line[x] == 'E' || line[x] == 'W')
+// 			norm_player(cfg, y, x, line[x]);
+// 		++x;
+// 	}
+// 	if (x > *max_w)
+// 		*max_w = x;
+// 	return (0);
+// }
+
+void	parse_map_line(char *line, t_cfg *cfg, int y, int *max_w)
+{
+	int x = 0;
+
+	// Обнуляем строку перед копированием
+	while (x < MAP_MAX)
+		cfg->map.grid[y][x++] = '\0';
+
+	x = 0;
+	while (line[x] && line[x] != '\n' && x < MAP_MAX)
+	{
+		cfg->map.grid[y][x] = line[x];
+		if (line[x] == 'N' || line[x] == 'S' ||
+			line[x] == 'E' || line[x] == 'W')
+			norm_player(cfg, y, x, line[x]);
+		x++;
+	}
+
+	if (x > *max_w)
+		*max_w = x;
+}
+
+void	fill_map_gaps(t_map *map)
+{
+	int	y = 0;
+
+	while (y < map->h)
+	{
+		int	x = 0;
+		while (x < map->w)
+		{
+			if (map->grid[y][x] == '\0')
+				map->grid[y][x] = ' ';
+			x++;
+		}
+		y++;
+	}
+}
+
 int	parse_header(char *file, t_cfg *cfg)
 {
-	int		fd;
+	int		fd, y = 0, max_w = 0;
 	char	*line;
 
-	fd = open(file, O_RDONLY);
+	fd = open_cub_file(file);
 	if (fd < 0)
 		return (1);
 	line = get_next_line(fd);
 	while (line)
 	{
-		if (ft_strncmp(line, "F ", 2) == 0)
-			cfg->floor_rgb = get_rgb(line + 2);
-		else if (ft_strncmp(line, "C ", 2) == 0)
-			cfg->ceil_rgb = get_rgb(line + 2);
-		else if (ft_strncmp(line, "NO ", 3) == 0)
-			parse_texture(line + 2, &cfg->tex_north);
-		else if (ft_strncmp(line, "SO ", 3) == 0)
-			parse_texture(line + 2, &cfg->tex_south);
-		else if (ft_strncmp(line, "WE ", 3) == 0)
-			parse_texture(line + 2, &cfg->tex_west);
-		else if (ft_strncmp(line, "EA ", 3) == 0)
-			parse_texture(line + 2, &cfg->tex_east);
-		else if (line[0] == '1' || line[0] == '0'
-			|| line[0] == 'N' || line[0] == 'S'
-			|| line[0] == 'E' || line[0] == 'W')
-		{
-			free(line);
-			break ;
-		}
+		if (ft_strncmp(line, "F ", 2) == 0 || ft_strncmp(line, "C ", 2) == 0 ||
+			ft_strncmp(line, "NO ", 3) == 0 || ft_strncmp(line, "SO ", 3) == 0 ||
+			ft_strncmp(line, "WE ", 3) == 0 || ft_strncmp(line, "EA ", 3) == 0)
+			parse_directive(line, cfg);
+		else if (ft_strchr(line, '1') || ft_strchr(line, '0'))
+			parse_map_line(line, cfg, y++, &max_w);
 		free(line);
 		line = get_next_line(fd);
 	}
+	cfg->map.h = y;
+	cfg->map.w = max_w;
+	fill_map_gaps(&cfg->map);
 	close(fd);
-	return (0);
+	return (cfg->is_player == 0);
 }
-

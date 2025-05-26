@@ -1,12 +1,12 @@
-NO ./maps/north.xpm
-SO ./maps/south.xpm
-WE ./maps/west.xpm
-EA ./maps/east.xpm
+NO ./maps/N.xpm
+SO ./maps/S.xpm
+WE ./maps/W.xpm
+EA ./maps/E.xpm
 F 0,120,200
 C 240,240,255
 1111111111
-1N00000001
-1000010001
+1000000001
+100E010001
 1000010001
 1000000001
 1111111111

@@ -19,7 +19,7 @@ OBJS	:= $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
 # Компилятор и флаги
 # ──────────────────────────────────────────────────────────────────────────────
 CC		:= cc
-CFLAGS	:= -Wall -Wextra -Werror -I$(INCDIR) -I$(MLXDIR) -I$(LFTDIR)
+CFLAGS	:= -Wall -Wextra -Werror -g -I$(INCDIR) -I$(MLXDIR) -I$(LFTDIR)
 
 LIBS	:= -L$(MLXDIR) -lmlx -lXext -lX11 -lm \
 			-L$(LFTDIR) -lft
