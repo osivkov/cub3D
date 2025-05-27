@@ -1,52 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hook.c                                             :+:      :+:    :+:   */
+/*   hook_move.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 13:32:10 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/26 17:06:33 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/27 12:21:39 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-
-int	close_hook(t_app *app)
-{
-	int	i;
-
-	i = 0;
-	while (i < 4)
-	{
-		if (app->cfg.textures[i].pixels)
-			free(app->cfg.textures[i].pixels);
-		i++;
-	}
-	free(app->cfg.tex_north);
-	free(app->cfg.tex_south);
-	free(app->cfg.tex_west);
-	free(app->cfg.tex_east);
-	if (app->mlx.screen.img)
-		mlx_destroy_image(app->mlx.mlx, app->mlx.screen.img);
-	if (app->mlx.win)
-		mlx_destroy_window(app->mlx.mlx, app->mlx.win);
-	if (app->mlx.mlx)
-	{
-		mlx_destroy_display(app->mlx.mlx);
-		free(app->mlx.mlx);
-	}
-	exit(0);
-	return (0);
-}
-
-static double	get_padding_sign(double val, double padding)
-{
-	if (val > 0)
-		return (padding);
-	else
-		return (-padding);
-}
 
 static void	move_forward(t_cfg *cfg)
 {
@@ -138,12 +102,4 @@ void	move_player(t_cfg *cfg, int keycode)
 		if (cfg->pl.dir >= 2 * M_PI)
 			cfg->pl.dir -= 2 * M_PI;
 	}
-}
-
-int	key_press(int keycode, t_app *app)
-{
-	if (keycode == KEY_ESC)
-		close_hook(app);
-	move_player(&app->cfg, keycode);
-	return (0);
 }

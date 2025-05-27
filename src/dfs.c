@@ -6,68 +6,81 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 10:31:53 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/26 16:47:53 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/27 12:18:39 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-bool is_walkable(char c)
+static bool	is_walkable(char c)
 {
 	return (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W');
 }
 
-bool is_space(char c)
+static bool	is_space(char c)
 {
 	return (c == ' ' || c == '\n');
 }
 
-bool	dfs_check(t_map *map, bool visited[MAP_MAX][MAP_MAX], int y, int x)
+static bool	dfs_check(t_map *map, bool visited[MAP_MAX][MAP_MAX], int y, int x)
 {
+	char	c;
+
 	if (y < 0 || y >= map->h || x < 0 || x >= map->w)
-		return (false); // Выход за пределы — дырка!
-
+		return (false);
 	if (visited[y][x])
-		return (true); // Уже были — всё ок
-
-	char c = map->grid[y][x];
-
-	if (c == '1') // Стена — остановка
 		return (true);
-
+	c = map->grid[y][x];
+	if (c == '1')
+		return (true);
 	if (is_space(c) || !is_walkable(c))
 		return (false);
-
 	visited[y][x] = true;
-
-	// Рекурсивный обход в 4 стороны
-	return (
-		dfs_check(map, visited, y + 1, x) &&
-		dfs_check(map, visited, y - 1, x) &&
-		dfs_check(map, visited, y, x + 1) &&
+	return (dfs_check(map, visited, y + 1, x) && \
+		dfs_check(map, visited, y - 1, x) && \
+		dfs_check(map, visited, y, x + 1) && \
 		dfs_check(map, visited, y, x - 1)
 	);
 }
 
+static void	init_visited(bool visited[MAP_MAX][MAP_MAX])
+{
+	int	y;
+	int	x;
+
+	y = 0;
+	while (y < MAP_MAX)
+	{
+		x = 0;
+		while (x < MAP_MAX)
+		{
+			visited[y][x] = false;
+			x++;
+		}
+		y++;
+	}
+}
+
 bool	validate_map_closed(t_map *map)
 {
-	bool	visited[MAP_MAX][MAP_MAX] = {{0}};
-	int		y, x;
+	bool	visited[MAP_MAX][MAP_MAX];
+	int		y;
+	int		x;
+	char	c;
 
-	// найти игрока
+	init_visited(visited);
 	y = 0;
 	while (y < map->h)
 	{
 		x = 0;
 		while (x < map->w)
 		{
-			char c = map->grid[y][x];
+			c = map->grid[y][x];
 			if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
-				return dfs_check(map, visited, y, x);
+				return (dfs_check(map, visited, y, x));
 			++x;
 		}
 		++y;
 	}
-
-	return (false); // нет игрока — ошибка
+	return (false);
 }
