@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 14:28:05 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/27 15:11:15 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/28 16:10:36 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,19 +76,33 @@ static int	init_textures_def(t_cfg *cfg)
 	return (0);
 }
 
+static int	has_xpm_extension(const char *filename)
+{
+	size_t	len;
+
+	len = ft_strlen(filename);
+	if (len < 4)
+		return (0);
+	return (ft_strncmp(filename + len - 4, ".xpm", 4) == 0);
+}
+
 int	init_textures(t_app *app)
 {
 	init_textures_def(&app->cfg);
-	if (load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_NO], \
+	if (!has_xpm_extension(app->cfg.tex_north) || \
+		load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_NO], \
 		app->cfg.tex_north))
 		return (1);
-	if (load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_SO], \
+	if (!has_xpm_extension(app->cfg.tex_south) || \
+		load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_SO], \
 		app->cfg.tex_south))
 		return (1);
-	if (load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_WE], \
+	if (!has_xpm_extension(app->cfg.tex_west) || \
+		load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_WE], \
 		app->cfg.tex_west))
 		return (1);
-	if (load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_EA], \
+	if (!has_xpm_extension(app->cfg.tex_east) || \
+		load_xpm_texture(app->mlx.mlx, &app->cfg.textures[TEX_EA], \
 		app->cfg.tex_east))
 		return (1);
 	return (0);

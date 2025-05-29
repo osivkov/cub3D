@@ -1,0 +1,17 @@
+# Object files
+*.o
+
+# Libraries
+*.lib
+*.a
+
+# Executables
+*.out
+
+*.txt
+
+*.gch
+
+*.mytest
+
+.vscode

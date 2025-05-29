@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 12:19:32 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/27 16:08:00 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/28 16:52:16 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,30 +22,8 @@ double	get_padding_sign(double val, double padding)
 
 int	close_hook(t_app *app)
 {
-	int	i;
-
-	i = 0;
-	while (i < 4)
-	{
-		if (app->cfg.textures[i].pixels)
-			free(app->cfg.textures[i].pixels);
-		i++;
-	}
-	free(app->cfg.tex_north);
-	free(app->cfg.tex_south);
-	free(app->cfg.tex_west);
-	free(app->cfg.tex_east);
-	if (app->mlx.screen.img)
-		mlx_destroy_image(app->mlx.mlx, app->mlx.screen.img);
-	if (app->mlx.win)
-		mlx_destroy_window(app->mlx.mlx, app->mlx.win);
-	if (app->mlx.mlx)
-	{
-		mlx_destroy_display(app->mlx.mlx);
-		free(app->mlx.mlx);
-	}
+	clean_up(app);
 	exit(0);
-	return (0);
 }
 
 int	key_press(int keycode, t_app *app)

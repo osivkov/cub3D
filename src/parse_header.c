@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:16:42 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/27 15:00:50 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/28 18:03:43 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,48 +38,33 @@ static int	open_cub_file(const char *file)
 	return (fd);
 }
 
-static void	fill_map_gaps(t_map *map)
+static int	is_directive_line(const char *line)
 {
-	int	y;
-	int	x;
-
-	y = 0;
-	while (y < map->h)
-	{
-		x = 0;
-		while (x < map->w)
-		{
-			if (map->grid[y][x] == '\0')
-				map->grid[y][x] = ' ';
-			x++;
-		}
-		y++;
-	}
+	return (ft_strncmp(line, "F ", 2) == 0 || \
+			ft_strncmp(line, "C ", 2) == 0 || \
+			ft_strncmp(line, "NO ", 3) == 0 || \
+			ft_strncmp(line, "SO ", 3) == 0 || \
+			ft_strncmp(line, "WE ", 3) == 0 || \
+			ft_strncmp(line, "EA ", 3) == 0);
 }
 
 static int	read_map_lines(int fd, t_cfg *cfg, int *max_w)
 {
 	char	*line;
 	int		y;
+	int		ret;
 
 	y = 0;
 	line = get_next_line(fd);
 	while (line)
 	{
-		if ((ft_strncmp(line, "F ", 2) == 0 || \
-			ft_strncmp(line, "C ", 2) == 0 || \
-			ft_strncmp(line, "NO ", 3) == 0 || \
-			ft_strncmp(line, "SO ", 3) == 0 || \
-			ft_strncmp(line, "WE ", 3) == 0 || \
-			ft_strncmp(line, "EA ", 3) == 0) && \
-			parse_directive(line, cfg))
-		{
-			free(line);
-			return (1);
-		}
-		if (ft_strchr(line, '1') || ft_strchr(line, '0'))
-			parse_map_line(line, cfg, y++, max_w);
+		if (is_directive_line(line))
+			ret = parse_directive(line, cfg);
+		else
+			ret = parse_map_line(line, cfg, y++, max_w);
 		free(line);
+		if (ret)
+			return (1);
 		line = get_next_line(fd);
 	}
 	cfg->map.h = y;

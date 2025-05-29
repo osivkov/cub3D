@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:11:30 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/27 16:34:33 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/29 12:23:32 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,16 +148,15 @@ typedef struct s_app
 
 /* ────────── прототипы ────────── */
 int		get_rgb(char *s);
-void	norm_player(t_cfg *cfg, int y, int x, char c);
+int		norm_player(t_cfg *cfg, int y, int x, char c);
 void	parse_texture(char *line, char **dst);
 
 int		parse_directive(char *line, t_cfg *cfg);
-void	parse_map_line(char *line, t_cfg *cfg, int y, int *max_w);
-
-int		init_cfg(t_cfg *cfg);
+int		parse_map_line(char *line, t_cfg *cfg, int y, int *max_w);
+void	init_app_params(t_app *app);
+void	clean_up(t_app *app);
 int		init_textures(t_app *app);
 int		parse_header(char *file, t_cfg *cfg);
-int		parse_map(char *file, t_cfg *cfg);
 bool	validate_map_closed(t_map *map);
 double	raycast(t_cfg *cfg, int col, int *line_h, double *wall_x);
 int		frame(void *param);
@@ -166,11 +165,11 @@ double	get_padding_sign(double val, double padding);
 int		close_hook(t_app *app);
 int		hit_wall(t_cfg *cfg, int mx, int my);
 int		key_press(int keycode, t_app *app);
-
+void	fill_map_gaps(t_map *map);
 void	fill_sky(t_app *app);
 void	fill_floor(t_app *app);
 
 //debug
 void	print_map(const t_map *map);
-
+void	print_cfg(const t_cfg *cfg);
 #endif

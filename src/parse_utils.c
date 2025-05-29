@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 14:55:30 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/27 14:59:01 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/28 18:04:02 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	parse_directive(char *line, t_cfg *cfg)
 	return (0);
 }
 
-void	parse_map_line(char *line, t_cfg *cfg, int y, int *max_w)
+int	parse_map_line(char *line, t_cfg *cfg, int y, int *max_w)
 {
 	int	x;
 
@@ -50,9 +50,34 @@ void	parse_map_line(char *line, t_cfg *cfg, int y, int *max_w)
 		cfg->map.grid[y][x] = line[x];
 		if (line[x] == 'N' || line[x] == 'S' || \
 			line[x] == 'E' || line[x] == 'W')
-			norm_player(cfg, y, x, line[x]);
+		{
+			if (cfg->is_player == 0)
+				norm_player(cfg, y, x, line[x]);
+			else
+				return (1);
+		}
 		x++;
 	}
 	if (x > *max_w)
 		*max_w = x;
+	return (0);
+}
+
+void	fill_map_gaps(t_map *map)
+{
+	int	y;
+	int	x;
+
+	y = 0;
+	while (y < map->h)
+	{
+		x = 0;
+		while (x < map->w)
+		{
+			if (map->grid[y][x] == '\0')
+				map->grid[y][x] = ' ';
+			x++;
+		}
+		y++;
+	}
 }

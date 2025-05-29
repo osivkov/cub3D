@@ -6,22 +6,32 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 14:31:53 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/27 15:07:56 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/28 17:57:31 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int	init_cfg(t_cfg *cfg)
+void	init_app_params(t_app *app)
 {
-	cfg->is_player = 0;
-	cfg->floor_rgb = -1;
-	cfg->ceil_rgb = -1;
-	cfg->tex_north = NULL;
-	cfg->tex_south = NULL;
-	cfg->tex_west = NULL;
-	cfg->tex_east = NULL;
-	return (0);
+	int	i;
+
+	i = 0;
+	while (i < 4)
+	{
+		app->cfg.textures[i].pixels = NULL;
+		i++;
+	}
+	app->cfg.tex_north = NULL;
+	app->cfg.tex_south = NULL;
+	app->cfg.tex_west = NULL;
+	app->cfg.tex_east = NULL;
+	app->mlx.screen.img = NULL;
+	app->mlx.win = NULL;
+	app->mlx.mlx = NULL;
+	app->cfg.is_player = 0;
+	app->cfg.floor_rgb = -1;
+	app->cfg.ceil_rgb = -1;
 }
 
 int	get_rgb(char *s)
@@ -49,7 +59,7 @@ int	get_rgb(char *s)
 	return ((r << 16) | (g << 8) | b);
 }
 
-void	norm_player(t_cfg *cfg, int y, int x, char c)
+int	norm_player(t_cfg *cfg, int y, int x, char c)
 {
 	cfg->is_player = 1;
 	cfg->pl.x = x + 0.5;
@@ -62,6 +72,7 @@ void	norm_player(t_cfg *cfg, int y, int x, char c)
 		cfg->pl.dir = M_PI;
 	else
 		cfg->pl.dir = 0.0;
+	return (0);
 }
 
 static void	trim_right(char *str)
