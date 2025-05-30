@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 14:55:30 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/28 18:04:02 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/30 10:49:27 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,7 @@ int	parse_map_line(char *line, t_cfg *cfg, int y, int *max_w)
 		cfg->map.grid[y][x] = line[x];
 		if (line[x] == 'N' || line[x] == 'S' || \
 			line[x] == 'E' || line[x] == 'W')
-		{
-			if (cfg->is_player == 0)
 				norm_player(cfg, y, x, line[x]);
-			else
-				return (1);
-		}
 		x++;
 	}
 	if (x > *max_w)

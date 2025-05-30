@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 10:16:42 by osivkov           #+#    #+#             */
-/*   Updated: 2025/05/28 18:03:43 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/30 10:49:43 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,5 @@ int	parse_header(char *file, t_cfg *cfg)
 		return (1);
 	cfg->map.w = max_w;
 	fill_map_gaps(&cfg->map);
-	return (cfg->is_player == 0);
+	return (cfg->is_player != 1);
 }

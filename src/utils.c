@@ -6,7 +6,7 @@
 /*   By: pkhvorov <pkhvorov@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 14:31:53 by pkhvorov          #+#    #+#             */
-/*   Updated: 2025/05/28 17:57:31 by pkhvorov         ###   ########.fr       */
+/*   Updated: 2025/05/30 10:48:52 by pkhvorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int	get_rgb(char *s)
 
 int	norm_player(t_cfg *cfg, int y, int x, char c)
 {
-	cfg->is_player = 1;
+	cfg->is_player = cfg->is_player + 1;
 	cfg->pl.x = x + 0.5;
 	cfg->pl.y = y + 0.5;
 	if (c == 'N')
